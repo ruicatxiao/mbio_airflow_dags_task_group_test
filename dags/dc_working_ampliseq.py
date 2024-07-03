@@ -1,16 +1,13 @@
-import datetime
 import pendulum
 import csv
 import os
-import sys
 
 from airflow.models.dag import DAG
-from airflow.models.dataset import Dataset
 from airflow.decorators import task
 from airflow.operators.bash import BashOperator
 
 with DAG(
-    dag_id="automated_ampliseq",
+    dag_id="dc_working_automated_ampliseq",
     schedule=None,
     start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
     catchup=False,
@@ -23,7 +20,7 @@ with DAG(
         # we should configure airflow to rerun this if the DAG changes too
         ampliseq_version = "2.9.0"
         # TODO what if we move or want to use it in a different context? a good way to configure this?
-        base_path = "/data/MicrobiomeDB/common/amplicon_sequencing/"
+        base_path = "/home/ruicatxiao/mbio_af_branch/local_testing_data_config"
 
         # first see whats been run before and under what conditions
         # TODO its possible this info is better in a postgres table
@@ -88,7 +85,7 @@ with DAG(
                                 f"-profile docker")
             
             # TODO dont want a hardcoded path here
-            R_command = (f"Rscript /data/MicrobiomeDB/mbio-airflow-dags/bin/ampliseq_postProcessing.R {study} {study_out_path}")
+            R_command = (f"Rscript /data/MicrobiomeDB/mbio_airflow_dags/bin/ampliseq_postProcessing.R {study} {study_out_path}")
 
             command = (nextflow_command + "; " + R_command)
 
